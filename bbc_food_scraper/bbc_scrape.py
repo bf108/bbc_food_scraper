@@ -21,7 +21,8 @@ def convert_url_to_soup(url: str) -> Union[bs4, ValueError]:
         raise ValueError('Invalid URL')
 
 def get_recipe_title(soup: bs4) -> str:
-    return soup.find('h1',class_='gel-trafalgar content-title__text').text.strip()
+    return soup.find('h1',class_='gel-trafalgar content-title__text')\
+        .text.strip().replace("'","").replace('’',"")
 
 def get_list_ingredient_tags(soup: bs4) -> List[Tag]:
     return soup.find_all('li',class_="recipe-ingredients__list-item")
