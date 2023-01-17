@@ -43,7 +43,7 @@ def get_qty_unit(text: str) -> tuple[str,str]:
     if text[0] == ".":
         text = "0" + text
     text_list = re.split(' |/',text)
-    if text_list[1].lower() in allowed_units:
+    if len(text_list) > 1 and text_list[1].lower() in allowed_units:
         qty, unit = text_list[0], text_list[1]
     else:
         try:
@@ -98,12 +98,16 @@ def collect_ingredients(soup: bs4) -> Dict:
     collected_ingredients = []
     tags = [ing_tag for ing_tag in get_list_ingredient_tags(soup)]
     tags_fmt = [replace_frac_with_float(ing_tag) for ing_tag in get_list_ingredient_tags(soup)]
+    counter = 1
     for t, tf in zip(tags, tags_fmt):
         collected_ingredients.append({
-            'ingredient': get_single_ingredient(t),
-            'qty':get_qty_unit(tf)[0], 
+            'item': get_single_ingredient(t),
+            'quantity':get_qty_unit(tf)[0], 
             'unit':get_qty_unit(tf)[1], 
-            'prep':get_ingredient_prep(t)})
+            'prep':get_ingredient_prep(t),
+            'num': counter
+            })
+        counter += 1
     return collected_ingredients
 
 def collect_entire_recipe_from_url(url: str) -> Dict:
@@ -115,3 +119,13 @@ def collect_entire_recipe_from_url(url: str) -> Dict:
     recipe_dict['ingredients'] = collect_ingredients(soup)
     recipe_dict['method'] = get_method(soup)
     return recipe_dict
+
+def get_recipe_cards_from_collection(url: str) -> list[Tag]:
+    soup = convert_url_to_soup(url)
+    return soup.find_all('div',class_='gel-layout__item gel-1/2 gel-1/3@m gel-1/4@xl')
+
+def generate_recipe_url(url: str) -> str:
+    return f"https://www.bbc.co.uk{url}"
+
+def get_recipe_url_from_card(tag: Tag) -> str:
+    return generate_recipe_url(tag.find_all('a')[0].get('href'))
