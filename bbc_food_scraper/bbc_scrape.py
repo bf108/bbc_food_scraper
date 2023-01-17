@@ -112,7 +112,7 @@ def collect_ingredients(soup: bs4) -> Dict:
     return collected_ingredients
 
 def collect_entire_recipe_from_url(url: str) -> Dict:
-    recipe_dict = {'title':None, 'cooking_time':None, 'prep_time':None, 'serving_portions':None, 'method':None, 'photo_url':None}
+    recipe_dict = {'title':None, 'cooking_time':None, 'prep_time':None, 'serving_portions':None, 'photo_url':None}
     functions_to_call = [get_recipe_title, get_cooking_time, get_prep_time, get_serving_portions, get_photo_url]
     soup = convert_url_to_soup(url)
     for k, f in zip(recipe_dict, functions_to_call):
